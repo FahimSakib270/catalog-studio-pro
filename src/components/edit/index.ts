@@ -1,5 +1,5 @@
 /**
- * Editing components — populated in a later phase.
- * Phase 1 intentionally leaves this directory empty.
+ * Editing components — edit panel + photos modal.
  */
-export {};
+export { EditPanel } from "./EditPanel";
+export { PhotosModal } from "./PhotosModal";

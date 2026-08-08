@@ -5,6 +5,7 @@ import { parseProduct, serializeProduct } from "../../lib/codec";
 import { seedProduct } from "../../lib/seed";
 import type { Product } from "../../types/catalog";
 import { GalleryModal } from "./GalleryModal";
+import { EditPanel, PhotosModal } from "../edit";
 
 /* ------------------------------------------------------------------ */
 /*  Floating toolbar — grouped actions with icons + tooltips           */
@@ -59,6 +60,8 @@ export function Toolbar() {
   const [pipeOpen, setPipeOpen] = useState(false);
   const [pipeText, setPipeText] = useState("");
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [photosOpen, setPhotosOpen] = useState(false);
 
   const active = products.find((p) => p.modelCode === activeId);
 
@@ -213,16 +216,10 @@ export function Toolbar() {
 
           <Divider />
 
-          <ToolButton
-            label="Edit"
-            onClick={() => toast.info("Edit", "Coming in a later phase.")}
-          >
+          <ToolButton label="Edit" onClick={() => setEditOpen(true)}>
             <EditIcon />
           </ToolButton>
-          <ToolButton
-            label="Photos"
-            onClick={() => toast.info("Photos", "Coming in a later phase.")}
-          >
+          <ToolButton label="Photos" onClick={() => setPhotosOpen(true)}>
             <PhotoIcon />
           </ToolButton>
 
@@ -337,6 +334,10 @@ export function Toolbar() {
 
       {/* designs gallery */}
       <GalleryModal open={galleryOpen} onClose={() => setGalleryOpen(false)} />
+
+      {/* edit panel + photos modal */}
+      <EditPanel open={editOpen} onClose={() => setEditOpen(false)} />
+      <PhotosModal open={photosOpen} onClose={() => setPhotosOpen(false)} />
     </>
   );
 }
