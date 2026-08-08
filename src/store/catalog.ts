@@ -214,5 +214,5 @@ export function useActiveProduct(): Product | undefined {
 }
 
 export function useActiveTemplateId(): string {
-  return useCatalog((s) => s.templateIds[s.activeId] ?? "classic");
+  return useCatalog((s) => s.templateIds[s.activeId] ?? "onyx-editorial");
 }

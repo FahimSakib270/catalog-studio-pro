@@ -4,6 +4,7 @@ import { useToast } from "./Toasts";
 import { parseProduct, serializeProduct } from "../../lib/codec";
 import { seedProduct } from "../../lib/seed";
 import type { Product } from "../../types/catalog";
+import { GalleryModal } from "./GalleryModal";
 
 /* ------------------------------------------------------------------ */
 /*  Floating toolbar — grouped actions with icons + tooltips           */
@@ -57,6 +58,7 @@ export function Toolbar() {
   const [renameValue, setRenameValue] = useState("");
   const [pipeOpen, setPipeOpen] = useState(false);
   const [pipeText, setPipeText] = useState("");
+  const [galleryOpen, setGalleryOpen] = useState(false);
 
   const active = products.find((p) => p.modelCode === activeId);
 
@@ -192,10 +194,7 @@ export function Toolbar() {
 
           <Divider />
 
-          <ToolButton
-            label="Designs"
-            onClick={() => toast.info("Designs", "Coming in a later phase.")}
-          >
+          <ToolButton label="Designs" onClick={() => setGalleryOpen(true)}>
             <LayersIcon />
           </ToolButton>
 
@@ -335,6 +334,9 @@ export function Toolbar() {
           </div>
         </div>
       )}
+
+      {/* designs gallery */}
+      <GalleryModal open={galleryOpen} onClose={() => setGalleryOpen(false)} />
     </>
   );
 }

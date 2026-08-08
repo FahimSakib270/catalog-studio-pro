@@ -101,5 +101,5 @@ export const seedProduct: Product = {
     inUse: "",
     qr: "",
   },
-  templateId: "classic",
+  templateId: "onyx-editorial",
 };

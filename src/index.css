@@ -176,3 +176,37 @@ body {
 .scroll-thin::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Brochure typography utilities                                      */
+/*  Read the template CSS variables set on each page root.             */
+/* ------------------------------------------------------------------ */
+.f-display {
+  font-family: var(--t-font-display);
+}
+.f-mono {
+  font-family: var(--t-font-mono);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Chinese language tuning                                            */
+/*  lang-zh is added to the page root when lang === "zh".              */
+/*  Zero letter-spacing on CJK + retuned sizes/heights.                */
+/* ------------------------------------------------------------------ */
+.lang-zh,
+.lang-zh * {
+  letter-spacing: 0 !important;
+}
+.lang-zh .f-display {
+  font-family: "Noto Sans SC", sans-serif;
+  font-weight: 600;
+}
+.lang-zh .f-mono {
+  font-family: "Noto Sans SC", sans-serif;
+}
+.lang-zh .zh-tight {
+  line-height: 1.25;
+}
+.lang-zh .zh-tighter {
+  line-height: 1.15;
+}

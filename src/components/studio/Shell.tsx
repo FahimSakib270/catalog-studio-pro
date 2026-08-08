@@ -4,37 +4,31 @@ import { Toolbar } from "./Toolbar";
 import { PageRail } from "./PageRail";
 import { ZoomControls } from "./ZoomControls";
 import { Toasts } from "./Toasts";
+import { BrochurePageView, buildPages } from "../brochure/Brochure";
+import type { BrochurePage } from "../brochure/Brochure";
 
 /* ------------------------------------------------------------------ */
 /*  Studio shell — pro design tool workspace                           */
 /* ------------------------------------------------------------------ */
-
-interface PageDef {
-  id: string;
-  label: string;
-}
 
 const A4_RATIO = 297 / 210; // height / width
 
 export function Shell() {
   const lang = useCatalog((s) => s.lang);
   const product = useActiveProduct();
+  const templateId = useCatalog(
+    (s) => s.templateIds[s.activeId] ?? "onyx-editorial",
+  );
 
   const [zoom, setZoom] = useState(100);
   const [activePageId, setActivePageId] = useState("cover");
   const scrollRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  /* placeholder pages for phase 1 */
-  const pages: PageDef[] = useMemo(
-    () => [
-      { id: "cover", label: lang === "en" ? "Cover" : "封面" },
-      { id: "overview", label: lang === "en" ? "Overview" : "概览" },
-      { id: "specs", label: lang === "en" ? "Specs" : "规格" },
-      { id: "variants", label: lang === "en" ? "Models" : "型号" },
-      { id: "terms", label: lang === "en" ? "Terms" : "条款" },
-    ],
-    [lang],
+  /* real brochure pages for the active product */
+  const pages: BrochurePage[] = useMemo(
+    () => (product ? buildPages(product, lang) : []),
+    [product, lang],
   );
 
   /* scroll to a page when selected from the rail */
@@ -131,11 +125,16 @@ export function Shell() {
                   className="relative overflow-hidden rounded-sm bg-white shadow-panel"
                   style={{ width: pageWidth, height: pageHeight }}
                 >
-                  <PlaceholderPage
-                    pageId={page.id}
-                    product={product}
-                    lang={lang}
-                  />
+                  {product && (
+                    <BrochurePageView
+                      product={product}
+                      lang={lang}
+                      templateId={templateId}
+                      pageId={page.id}
+                      pageNum={index + 1}
+                      total={pages.length}
+                    />
+                  )}
                 </div>
               </div>
             ))}
@@ -144,65 +143,6 @@ export function Shell() {
       </main>
 
       <Toasts />
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Placeholder A4 page content (phase 1)                              */
-/* ------------------------------------------------------------------ */
-
-function PlaceholderPage({
-  pageId,
-  product,
-  lang,
-}: {
-  pageId: string;
-  product?: ReturnType<typeof useActiveProduct>;
-  lang: "en" | "zh";
-}) {
-  const title = product
-    ? lang === "en"
-      ? product.titleLinesEn
-      : product.titleLinesZh
-    : "";
-
-  return (
-    <div className="flex h-full w-full flex-col bg-white text-neutral-900">
-      {/* top hairline */}
-      <div className="h-1 w-full bg-neutral-900" />
-
-      <div className="flex flex-1 flex-col px-10 py-8">
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-neutral-400">
-            {product?.modelCode ?? "MODEL"}
-          </span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-neutral-400">
-            {pageId}
-          </span>
-        </div>
-
-        <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <div className="mb-4 h-16 w-16 rounded-full border-2 border-dashed border-neutral-300" />
-          <h1 className="font-display text-3xl font-semibold leading-tight text-neutral-900">
-            {title || "Product Title"}
-          </h1>
-          <p className="mt-3 max-w-md text-[11px] leading-relaxed text-neutral-500">
-            {lang === "en"
-              ? "Placeholder page — content renders in a later phase."
-              : "占位页面 — 内容将在后续阶段渲染。"}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
-          <span className="font-mono text-[8px] uppercase tracking-widest text-neutral-400">
-            Catalog Studio Pro
-          </span>
-          <span className="font-mono text-[8px] text-neutral-400">
-            {lang === "en" ? "Page" : "页"} {pageId}
-          </span>
-        </div>
-      </div>
     </div>
   );
 }
