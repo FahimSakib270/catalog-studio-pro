@@ -5,13 +5,14 @@ import { SmartImage } from "./SmartImage";
 /**
  * COVER — wrapped in Folio (uniform frame).
  * Composition (no empty middle/bottom):
- *   kicker/title/rule/edition/tagline → photo stage (95mm) → trust pills
- *   → margin-top:auto → 3-col ribbon → company band → folio bottom bar.
+ *   kicker/title/rule/edition/tagline → flex-1 centered photo card
+ *   → trust pills → margin-top:auto → 3-col ribbon → company band.
+ * The photo card shrink-wraps the image (white card, red corner ticks);
+ * all leftover space is plain page background.
  */
 
 export function Cover({ ctx }: { ctx: BrochureCtx }) {
   const p = ctx.product;
-  const dark = ctx.template.dark.cover;
   const lines = titleLines(ctx);
   const tagline = pick(ctx, p.taglineEn, p.taglineZh);
   const kicker = pick(
@@ -80,33 +81,22 @@ export function Cover({ ctx }: { ctx: BrochureCtx }) {
         {tagline}
       </p>
 
-      {/* photo stage — 95mm, ratio-hugging frame */}
-      <div className="mt-5">
+      {/* photo zone — flex-1, card floats centered, no grey panel */}
+      <div className="mt-5 flex min-h-0 flex-1 items-center justify-center">
         {productImg.dataUrl ? (
           <SmartImage
             src={productImg.dataUrl}
             alt={p.modelCode}
-            ratio={productImg.ratio}
             variant="product"
-            dark={dark}
-            stageHeight="95mm"
+            maxHeight="95mm"
           />
         ) : (
-          <div
-            className="flex h-[95mm] w-full items-center justify-center"
-            style={{
-              backgroundColor: dark
-                ? "color-mix(in srgb, white 7%, transparent)"
-                : "color-mix(in srgb, var(--t-ink) 5%, transparent)",
-            }}
+          <span
+            className="f-mono text-[9px] uppercase tracking-[0.18em]"
+            style={{ color: "var(--t-grey)" }}
           >
-            <span
-              className="f-mono text-[9px] uppercase tracking-[0.18em]"
-              style={{ color: "var(--t-grey)" }}
-            >
-              {pick(ctx, "Product photo", "产品图")}
-            </span>
-          </div>
+            {pick(ctx, "Product photo", "产品图")}
+          </span>
         )}
       </div>
 

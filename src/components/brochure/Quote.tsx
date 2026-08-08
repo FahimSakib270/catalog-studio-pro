@@ -4,8 +4,9 @@ import { SmartImage } from "./SmartImage";
 
 /**
  * P5 — Quote. 2-col stretch, no empty areas.
- *   LEFT:  "In the Box" (top) → in-use photo fills the rest.
+ *   LEFT:  "In the Box" (top) → in-use photo card centered in the photo zone.
  *   RIGHT: big price (top) → warranty list pinned to the bottom (mt-auto).
+ * The photo card shrink-wraps the image; leftover space is plain background.
  */
 
 export function Quote({ ctx }: { ctx: BrochureCtx }) {
@@ -46,7 +47,7 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
       </div>
 
       <div className="mt-5 grid flex-1 grid-cols-2 gap-6">
-        {/* LEFT: in-box top + in-use photo fills */}
+        {/* LEFT: in-box top + in-use photo card centered in the photo zone */}
         <div className="flex flex-col">
           <div
             className="f-mono text-[9px] font-semibold uppercase tracking-[0.18em]"
@@ -62,33 +63,22 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
             {includedNote}
           </p>
 
-          {/* in-use photo fills the remaining column height */}
-          <div className="mt-4 flex flex-1 flex-col">
+          {/* photo zone — flex-1, card floats centered, no grey panel */}
+          <div className="mt-4 flex min-h-0 flex-1 items-center justify-center">
             {inUseImg.dataUrl ? (
               <SmartImage
                 src={inUseImg.dataUrl}
                 alt="in use"
-                ratio={inUseImg.ratio}
                 variant="inUse"
-                stageHeight="100%"
-                className="flex-1"
+                maxHeight="80mm"
               />
             ) : (
-              <div
-                className="flex flex-1 items-center justify-center rounded-sm border"
-                style={{
-                  borderColor: "var(--t-hairline)",
-                  backgroundColor: "var(--t-hairline)",
-                  breakInside: "avoid",
-                }}
+              <span
+                className="f-mono text-[9px] uppercase tracking-[0.18em]"
+                style={{ color: "var(--t-grey)" }}
               >
-                <span
-                  className="f-mono text-[9px] uppercase tracking-[0.18em]"
-                  style={{ color: "var(--t-grey)" }}
-                >
-                  {pick(ctx, "In-use photo", "使用场景图")}
-                </span>
-              </div>
+                {pick(ctx, "In-use photo", "使用场景图")}
+              </span>
             )}
           </div>
         </div>

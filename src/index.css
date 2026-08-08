@@ -276,15 +276,4 @@ body {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-
-  /* print-safe photo fallback: if the ratio-hugging inner frame ever
-     misses (e.g. no stored ratio), force the stage to fill and the image
-     to contain so a photo can never blank out in the PDF. */
-  .smart-stage .inner-frame {
-    width: 100% !important;
-    height: 100% !important;
-  }
-  .smart-stage img {
-    object-fit: contain !important;
-  }
 }
