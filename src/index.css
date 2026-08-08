@@ -210,3 +210,63 @@ body {
 .lang-zh .zh-tighter {
   line-height: 1.15;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Print engine (Phase 4)                                             */
+/*  Hidden #printRoot holds full-A4 pages. Studio chrome is never      */
+/*  printed. Dark templates keep their inline dark paper via           */
+/*  print-color-adjust:exact.                                          */
+/* ------------------------------------------------------------------ */
+#printRoot {
+  display: none;
+}
+
+#printRoot .page {
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+}
+
+#printRoot .page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* studio chrome never prints */
+  .studio-app {
+    display: none !important;
+  }
+
+  /* only the A4 pages print */
+  #printRoot {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+  }
+
+  /* force exact colors everywhere (dark templates must stay dark) */
+  *,
+  *::before,
+  *::after {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+}

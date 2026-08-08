@@ -6,6 +6,7 @@ import { ZoomControls } from "./ZoomControls";
 import { Toasts } from "./Toasts";
 import { BrochurePageView, buildPages } from "../brochure/Brochure";
 import type { BrochurePage } from "../brochure/Brochure";
+import { PrintRoot } from "../brochure/PrintRoot";
 
 /* ------------------------------------------------------------------ */
 /*  Studio shell — pro design tool workspace                           */
@@ -76,73 +77,78 @@ export function Shell() {
   const pageHeight = pageWidth * A4_RATIO;
 
   return (
-    <div className="workspace-bg relative flex h-full w-full overflow-hidden">
-      {/* subtle grid overlay */}
-      <div className="workspace-grid pointer-events-none absolute inset-0" />
+    <>
+      <div className="studio-app workspace-bg relative flex h-full w-full overflow-hidden">
+        {/* subtle grid overlay */}
+        <div className="workspace-grid pointer-events-none absolute inset-0" />
 
-      {/* left page rail */}
-      <PageRail
-        pages={pages}
-        activePageId={activePageId}
-        onSelect={scrollToPage}
-      />
+        {/* left page rail */}
+        <PageRail
+          pages={pages}
+          activePageId={activePageId}
+          onSelect={scrollToPage}
+        />
 
-      {/* center preview */}
-      <main className="relative flex-1 overflow-hidden">
-        <Toolbar />
+        {/* center preview */}
+        <main className="relative flex-1 overflow-hidden">
+          <Toolbar />
 
-        {/* zoom controls */}
-        <div className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2">
-          <ZoomControls zoom={zoom} onZoomChange={setZoom} onFit={fitZoom} />
-        </div>
-
-        {/* scrollable A4 pages */}
-        <div
-          ref={scrollRef}
-          className="scroll-thin h-full overflow-y-auto px-12 pb-24 pt-24"
-        >
-          <div className="mx-auto flex w-fit flex-col items-center gap-10">
-            {pages.map((page, index) => (
-              <div
-                key={page.id}
-                ref={(el) => {
-                  pageRefs.current[page.id] = el;
-                }}
-                className="relative"
-              >
-                {/* page number */}
-                <div className="mb-2 flex items-center justify-between px-1">
-                  <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">
-                    {page.label}
-                  </span>
-                  <span className="font-mono text-[11px] text-ink-700">
-                    {index + 1} / {pages.length}
-                  </span>
-                </div>
-
-                {/* A4 sheet */}
-                <div
-                  className="relative overflow-hidden rounded-sm bg-white shadow-panel"
-                  style={{ width: pageWidth, height: pageHeight }}
-                >
-                  {product && (
-                    <BrochurePageView
-                      product={product}
-                      lang={lang}
-                      templateId={templateId}
-                      pageId={page.id}
-                      pageNum={index + 1}
-                      total={pages.length}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
+          {/* zoom controls */}
+          <div className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2">
+            <ZoomControls zoom={zoom} onZoomChange={setZoom} onFit={fitZoom} />
           </div>
-        </div>
-      </main>
 
-      <Toasts />
-    </div>
+          {/* scrollable A4 pages */}
+          <div
+            ref={scrollRef}
+            className="scroll-thin h-full overflow-y-auto px-12 pb-24 pt-24"
+          >
+            <div className="mx-auto flex w-fit flex-col items-center gap-10">
+              {pages.map((page, index) => (
+                <div
+                  key={page.id}
+                  ref={(el) => {
+                    pageRefs.current[page.id] = el;
+                  }}
+                  className="relative"
+                >
+                  {/* page number */}
+                  <div className="mb-2 flex items-center justify-between px-1">
+                    <span className="font-mono text-[11px] uppercase tracking-widest text-ink-500">
+                      {page.label}
+                    </span>
+                    <span className="font-mono text-[11px] text-ink-700">
+                      {index + 1} / {pages.length}
+                    </span>
+                  </div>
+
+                  {/* A4 sheet */}
+                  <div
+                    className="relative overflow-hidden rounded-sm bg-white shadow-panel"
+                    style={{ width: pageWidth, height: pageHeight }}
+                  >
+                    {product && (
+                      <BrochurePageView
+                        product={product}
+                        lang={lang}
+                        templateId={templateId}
+                        pageId={page.id}
+                        pageNum={index + 1}
+                        total={pages.length}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+
+        <Toasts />
+      </div>
+
+      {/* hidden A4 print tree — shown only in @media print */}
+      <PrintRoot />
+    </>
   );
 }

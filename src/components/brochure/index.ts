@@ -4,5 +4,6 @@
  */
 export { Brochure } from "./Brochure";
 export { CoverThumb } from "./CoverThumb";
+export { PrintRoot } from "./PrintRoot";
 export type { BrochureCtx } from "./context";
 export { PageRoot, pick, titleLines, pageVars } from "./context";

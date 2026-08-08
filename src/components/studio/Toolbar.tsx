@@ -3,6 +3,7 @@ import { useCatalog } from "../../store/catalog";
 import { useToast } from "./Toasts";
 import { parseProduct, serializeProduct } from "../../lib/codec";
 import { seedProduct } from "../../lib/seed";
+import { printBrochure } from "../../lib/print";
 import type { Product } from "../../types/catalog";
 import { GalleryModal } from "./GalleryModal";
 import { EditPanel, PhotosModal } from "../edit";
@@ -228,10 +229,7 @@ export function Toolbar() {
           <ToolButton label="Import / Export JSON" onClick={handleExport}>
             <JsonIcon />
           </ToolButton>
-          <ToolButton
-            label="PDF"
-            onClick={() => toast.info("PDF", "Coming in a later phase.")}
-          >
+          <ToolButton label="PDF" onClick={() => void printBrochure()}>
             <PdfIcon />
           </ToolButton>
         </div>
