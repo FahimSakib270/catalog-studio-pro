@@ -1,6 +1,7 @@
 import type { BrochureCtx } from "./context";
 import { pick, titleLines } from "./context";
 import type { RibbonStyle } from "../../lib/templates";
+import { SmartImage } from "./SmartImage";
 
 /**
  * P1 — Cover.
@@ -108,11 +109,14 @@ function PhotoFrame({ ctx }: { ctx: BrochureCtx }) {
   const src = ctx.product.images.product;
   if (src) {
     return (
-      <div className="relative">
-        <img
+      <div className="relative h-full w-full">
+        <SmartImage
           src={src}
           alt={ctx.product.modelCode}
-          className="h-full w-full object-cover"
+          variant="product"
+          dark={ctx.template.dark.cover}
+          fill
+          className="h-full w-full"
         />
         <CornerTicks />
       </div>
@@ -158,7 +162,7 @@ function CompanyBand({ ctx }: { ctx: BrochureCtx }) {
   return (
     <div
       className="flex items-center justify-between px-6 py-2.5"
-      style={{ backgroundColor: "var(--t-accent2)" }}
+      style={{ backgroundColor: "var(--t-accent2)", breakInside: "avoid" }}
     >
       <span
         className="f-display text-[11px] font-semibold uppercase tracking-[0.16em]"
@@ -263,7 +267,7 @@ export function Cover({ ctx }: { ctx: BrochureCtx }) {
       </div>
 
       {/* ribbon */}
-      <div className="px-6 pb-4 pt-2">
+      <div className="px-6 pb-4 pt-2" style={{ breakInside: "avoid" }}>
         <Ribbon ctx={ctx} style={ctx.template.ribbonStyle} />
       </div>
 

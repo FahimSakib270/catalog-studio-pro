@@ -1,5 +1,6 @@
 import type { BrochureCtx } from "./context";
 import { pick } from "./context";
+import { SmartImage } from "./SmartImage";
 
 /**
  * LAST — Contact. Mirrors the cover.
@@ -60,19 +61,24 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
         </div>
 
         {/* QR white card */}
-        <div className="mt-6 flex items-center gap-4">
+        <div
+          className="mt-6 flex items-center gap-4"
+          style={{ breakInside: "avoid" }}
+        >
           <div
-            className="flex h-24 w-24 items-center justify-center rounded-sm border"
+            className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-sm border"
             style={{
               borderColor: "var(--t-hairline)",
               backgroundColor: "#ffffff",
             }}
           >
             {p.images.qr ? (
-              <img
+              <SmartImage
                 src={p.images.qr}
                 alt="QR"
-                className="h-full w-full object-contain"
+                variant="qr"
+                fill
+                className="h-full w-full"
               />
             ) : (
               <span
@@ -100,7 +106,7 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
       {/* ribbon phone/email/wechat */}
       <div
         className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-3"
-        style={{ backgroundColor: "var(--t-accent)" }}
+        style={{ backgroundColor: "var(--t-accent)", breakInside: "avoid" }}
       >
         <span
           className="f-mono text-[9px] font-bold uppercase tracking-[0.12em]"
@@ -125,7 +131,7 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
       {/* company band */}
       <div
         className="flex items-center justify-between px-6 py-2.5"
-        style={{ backgroundColor: "var(--t-accent2)" }}
+        style={{ backgroundColor: "var(--t-accent2)", breakInside: "avoid" }}
       >
         <span
           className="f-display text-[11px] font-semibold uppercase tracking-[0.16em]"

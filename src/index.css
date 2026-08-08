@@ -269,4 +269,11 @@ body {
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
   }
+
+  /* keep photo frames, tables, bands and ribbons intact across page breaks */
+  .break-avoid,
+  [style*="break-inside: avoid"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }

@@ -1,5 +1,6 @@
 import type { BrochureCtx } from "./context";
 import { pick } from "./context";
+import { SmartImage } from "./SmartImage";
 
 /**
  * P5 — Quote.
@@ -107,17 +108,20 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
 
           {/* in-use photo slot */}
           <div
-            className="mt-4 flex flex-1 items-center justify-center rounded-sm border"
+            className="mt-4 flex flex-1 items-center justify-center overflow-hidden rounded-sm border"
             style={{
               borderColor: "var(--t-hairline)",
               backgroundColor: "var(--t-hairline)",
+              breakInside: "avoid",
             }}
           >
             {p.images.inUse ? (
-              <img
+              <SmartImage
                 src={p.images.inUse}
                 alt="in use"
-                className="h-full w-full object-cover"
+                variant="inUse"
+                fill
+                className="h-full w-full"
               />
             ) : (
               <span

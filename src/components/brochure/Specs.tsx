@@ -16,7 +16,7 @@ function SpecTable({ ctx }: { ctx: BrochureCtx }) {
     return (
       <div
         className="grid grid-cols-2 gap-px"
-        style={{ backgroundColor: "var(--t-hairline)" }}
+        style={{ backgroundColor: "var(--t-hairline)", breakInside: "avoid" }}
       >
         {rows.map((s, i) => (
           <div
@@ -40,7 +40,7 @@ function SpecTable({ ctx }: { ctx: BrochureCtx }) {
     return (
       <div
         className="overflow-hidden rounded-sm border"
-        style={{ borderColor: "var(--t-hairline)" }}
+        style={{ borderColor: "var(--t-hairline)", breakInside: "avoid" }}
       >
         {rows.map((s, i) => (
           <div
@@ -59,7 +59,7 @@ function SpecTable({ ctx }: { ctx: BrochureCtx }) {
   }
   if (style === "mono") {
     return (
-      <div className="space-y-1">
+      <div className="space-y-1" style={{ breakInside: "avoid" }}>
         {rows.map((s, i) => (
           <div key={i} className="flex items-baseline justify-between gap-4">
             <span
@@ -80,7 +80,7 @@ function SpecTable({ ctx }: { ctx: BrochureCtx }) {
   }
   // magazine / classic
   return (
-    <div>
+    <div style={{ breakInside: "avoid" }}>
       {rows.map((s, i) => (
         <div
           key={i}
@@ -100,7 +100,7 @@ function SpecTable({ ctx }: { ctx: BrochureCtx }) {
 function PackagingTable({ ctx }: { ctx: BrochureCtx }) {
   const items = ctx.product.packaging;
   return (
-    <div>
+    <div style={{ breakInside: "avoid" }}>
       {items.map((p, i) => (
         <div
           key={i}
