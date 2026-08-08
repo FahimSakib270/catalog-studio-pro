@@ -3,9 +3,9 @@ import { pick } from "./context";
 import { SmartImage } from "./SmartImage";
 
 /**
- * P5 — Quote.
- * "04" numeral, big accent price + labels, warranty list, included list,
- * in-use photo slot.
+ * P5 — Quote. 2-col stretch, no empty areas.
+ *   LEFT:  "In the Box" (top) → in-use photo fills the rest.
+ *   RIGHT: big price (top) → warranty list pinned to the bottom (mt-auto).
  */
 
 export function Quote({ ctx }: { ctx: BrochureCtx }) {
@@ -45,7 +45,53 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
       </div>
 
       <div className="mt-5 grid flex-1 grid-cols-2 gap-6">
-        {/* left: price + warranty */}
+        {/* LEFT: in-box top + in-use photo fills */}
+        <div className="flex flex-col">
+          <div
+            className="f-mono text-[9px] font-semibold uppercase tracking-[0.18em]"
+            style={{ color: "var(--t-grey)" }}
+          >
+            {includedTitle}
+          </div>
+          <p className="mt-2 text-[11px] leading-relaxed">{included}</p>
+          <p
+            className="mt-1 f-mono text-[8px] uppercase tracking-[0.12em]"
+            style={{ color: "var(--t-accent)" }}
+          >
+            {includedNote}
+          </p>
+
+          {/* in-use photo fills the remaining column height */}
+          <div className="mt-4 flex flex-1 flex-col">
+            {p.images.inUse ? (
+              <SmartImage
+                src={p.images.inUse}
+                alt="in use"
+                variant="inUse"
+                stageHeight="100%"
+                className="flex-1"
+              />
+            ) : (
+              <div
+                className="flex flex-1 items-center justify-center rounded-sm border"
+                style={{
+                  borderColor: "var(--t-hairline)",
+                  backgroundColor: "var(--t-hairline)",
+                  breakInside: "avoid",
+                }}
+              >
+                <span
+                  className="f-mono text-[9px] uppercase tracking-[0.18em]"
+                  style={{ color: "var(--t-grey)" }}
+                >
+                  {pick(ctx, "In-use photo", "使用场景图")}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: price top + warranty bottom */}
         <div className="flex flex-col">
           {/* big price */}
           <div className="flex items-end gap-2">
@@ -68,8 +114,8 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
             </div>
           </div>
 
-          {/* warranty */}
-          <div className="mt-6">
+          {/* warranty pinned to the bottom */}
+          <div className="mt-auto">
             <div
               className="f-mono text-[9px] font-semibold uppercase tracking-[0.18em]"
               style={{ color: "var(--t-grey)" }}
@@ -87,50 +133,6 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* right: included + photo */}
-        <div className="flex flex-col">
-          <div
-            className="f-mono text-[9px] font-semibold uppercase tracking-[0.18em]"
-            style={{ color: "var(--t-grey)" }}
-          >
-            {includedTitle}
-          </div>
-          <p className="mt-2 text-[11px] leading-relaxed">{included}</p>
-          <p
-            className="mt-1 f-mono text-[8px] uppercase tracking-[0.12em]"
-            style={{ color: "var(--t-accent)" }}
-          >
-            {includedNote}
-          </p>
-
-          {/* in-use photo slot */}
-          <div
-            className="mt-4 flex flex-1 items-center justify-center overflow-hidden rounded-sm border"
-            style={{
-              borderColor: "var(--t-hairline)",
-              backgroundColor: "var(--t-hairline)",
-              breakInside: "avoid",
-            }}
-          >
-            {p.images.inUse ? (
-              <SmartImage
-                src={p.images.inUse}
-                alt="in use"
-                variant="inUse"
-                fill
-                className="h-full w-full"
-              />
-            ) : (
-              <span
-                className="f-mono text-[9px] uppercase tracking-[0.18em]"
-                style={{ color: "var(--t-grey)" }}
-              >
-                {pick(ctx, "In-use photo", "使用场景图")}
-              </span>
-            )}
           </div>
         </div>
       </div>

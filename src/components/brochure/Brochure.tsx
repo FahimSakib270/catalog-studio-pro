@@ -13,8 +13,9 @@ import { Contact } from "./Contact";
 
 /**
  * Brochure — assembles the full page set for a product.
- * Each page is wrapped in PageRoot (template vars + lang-zh) and Folio
- * (uniform frame). Cover/Contact use the template's dark flag.
+ * Every page (including the cover) is wrapped in PageRoot (template vars +
+ * lang-zh) and Folio (uniform frame). Cover/Contact use the template's dark
+ * flag.
  */
 
 export interface BrochurePage {
@@ -63,18 +64,23 @@ export function BrochurePageView({
 
   return (
     <PageRoot ctx={ctx} dark={dark}>
-      {pageId === "cover" ? (
-        <Cover ctx={ctx} />
-      ) : (
-        <Folio ctx={ctx} pageNum={pageNum} total={total}>
-          {pageId === "overview" && <Overview ctx={ctx} />}
-          {pageId === "features" && <Features ctx={ctx} />}
-          {pageId === "specs" && <Specs ctx={ctx} />}
-          {pageId === "quote" && <Quote ctx={ctx} />}
-          {pageId === "about" && <About ctx={ctx} />}
-          {pageId === "contact" && <Contact ctx={ctx} />}
-        </Folio>
-      )}
+      <Folio ctx={ctx} pageNum={pageNum} total={total}>
+        {pageId === "cover" ? (
+          <Cover ctx={ctx} />
+        ) : pageId === "overview" ? (
+          <Overview ctx={ctx} />
+        ) : pageId === "features" ? (
+          <Features ctx={ctx} />
+        ) : pageId === "specs" ? (
+          <Specs ctx={ctx} />
+        ) : pageId === "quote" ? (
+          <Quote ctx={ctx} />
+        ) : pageId === "about" ? (
+          <About ctx={ctx} />
+        ) : (
+          <Contact ctx={ctx} />
+        )}
+      </Folio>
     </PageRoot>
   );
 }

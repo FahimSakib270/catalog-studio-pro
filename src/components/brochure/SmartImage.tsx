@@ -1,14 +1,16 @@
+import { useLayoutEffect, useRef, useState } from "react";
+
 /**
- * SmartImage — full-image frames with no cropping.
+ * SmartImage v2 — ratio-hugging frames with a flat, clean stage.
  *
  * Used for product / in-use / logo photos across every template (preview
- * AND print). The frame keeps a fixed aspect ratio (or fills its parent
- * when `fill` is set) and shows the ENTIRE photo via object-contain, with a
- * blurred, scaled copy behind it so the frame never has empty bars and
- * never crops the subject.
+ * AND print). The OUTER STAGE is a fixed-height box with a flat tint (no
+ * blur, no smudge). The INNER FRAME hugs the photo's own aspect ratio
+ * (clamped to 0.8–2.2) so the image is shown in full with ZERO cropping and
+ * ZERO letterbox bars. Template corner ticks hug the inner frame.
  *
- * QR is the exception: it renders on a plain white card with object-contain
- * and NO blur layer, so the code stays crisp and scannable.
+ * QR is the exception: it renders on a plain white square card with
+ * object-contain and NO stage, so the code stays crisp and scannable.
  */
 
 export type SmartImageVariant = "product" | "inUse" | "logo" | "qr";
@@ -17,38 +19,73 @@ interface SmartImageProps {
   src: string;
   alt: string;
   variant?: SmartImageVariant;
-  /** Dark templates use a stronger blur layer (opacity-30 vs opacity-20). */
+  /** Dark templates use a lighter tint + light dot grid. */
   dark?: boolean;
-  /** Fill the parent frame (h-full w-full) instead of a fixed aspect ratio. */
-  fill?: boolean;
+  /** Outer stage height (e.g. "95mm", "22mm", or "100%" to fill parent). */
+  stageHeight?: string;
   className?: string;
 }
 
-const ASPECT: Record<SmartImageVariant, string> = {
-  product: "aspect-[4/3]",
-  inUse: "aspect-[4/3]",
-  logo: "aspect-[3/2]",
-  qr: "aspect-square",
-};
+/** Clamp the photo's natural ratio so extreme panoramas/tall shots stay tidy. */
+function clampRatio(r: number): number {
+  return Math.min(2.2, Math.max(0.8, r));
+}
+
+function CornerTicks() {
+  const c = "absolute h-3 w-3 border-[var(--t-accent)]";
+  return (
+    <>
+      <span className={`${c} left-0 top-0 border-l-2 border-t-2`} />
+      <span className={`${c} right-0 top-0 border-r-2 border-t-2`} />
+      <span className={`${c} bottom-0 left-0 border-b-2 border-l-2`} />
+      <span className={`${c} bottom-0 right-0 border-b-2 border-r-2`} />
+    </>
+  );
+}
 
 export function SmartImage({
   src,
   alt,
   variant = "product",
   dark = false,
-  fill = false,
+  stageHeight = "100%",
   className = "",
 }: SmartImageProps) {
-  const aspect = fill ? "h-full w-full" : ASPECT[variant];
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [ratio, setRatio] = useState<number | null>(null);
+  const [fit, setFit] = useState<{ w: number; h: number } | null>(null);
 
-  // QR: plain white card, object-contain, no blur layer.
+  // Measure the stage and size the inner frame to hug the photo's ratio.
+  useLayoutEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || !ratio) return;
+    const measure = () => {
+      const sw = stage.clientWidth;
+      const sh = stage.clientHeight;
+      if (!sw || !sh) return;
+      if (ratio >= sw / sh) {
+        const w = sw;
+        setFit({ w, h: w / ratio });
+      } else {
+        const h = sh;
+        setFit({ w: h * ratio, h });
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(stage);
+    return () => ro.disconnect();
+  }, [ratio]);
+
+  // QR: plain white square card, object-contain, no stage / no blur.
   if (variant === "qr") {
     return (
       <div
-        className={`relative flex items-center justify-center overflow-hidden rounded-sm border ${aspect} ${className}`}
+        className={`relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-sm border ${className}`}
         style={{
           borderColor: "var(--t-hairline)",
           backgroundColor: "#ffffff",
+          breakInside: "avoid",
         }}
       >
         <img
@@ -61,29 +98,45 @@ export function SmartImage({
     );
   }
 
-  // Photo frames: blurred cover layer behind a full object-contain layer.
+  // Photo stage: flat tint + faint dot grid (no blur).
+  const stageBg = dark
+    ? "color-mix(in srgb, white 7%, transparent)"
+    : "color-mix(in srgb, var(--t-ink) 5%, transparent)";
+  const dotColor = dark
+    ? "color-mix(in srgb, white 8%, transparent)"
+    : "color-mix(in srgb, var(--t-ink) 8%, transparent)";
+
   return (
     <div
-      className={`relative overflow-hidden ${aspect} ${className}`}
-      style={{ breakInside: "avoid" }}
+      ref={stageRef}
+      className={`relative w-full overflow-hidden ${className}`}
+      style={{
+        height: stageHeight,
+        backgroundColor: stageBg,
+        backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px)`,
+        backgroundSize: "12px 12px",
+        breakInside: "avoid",
+      }}
     >
-      {/* background layer — same image, blurred + scaled, fills the frame */}
-      <img
-        src={src}
-        alt=""
-        aria-hidden
-        className={`absolute inset-0 h-full w-full scale-110 object-cover blur-xl ${
-          dark ? "opacity-30" : "opacity-20"
-        }`}
-        style={{ printColorAdjust: "exact", WebkitPrintColorAdjust: "exact" }}
-      />
-      {/* foreground layer — FULL photo, centered, never cropped */}
-      <img
-        src={src}
-        alt={alt}
-        className="relative h-full w-full object-contain p-2"
-        style={{ printColorAdjust: "exact", WebkitPrintColorAdjust: "exact" }}
-      />
+      {/* inner frame — hugs the photo's own shape */}
+      <div
+        className="relative mx-auto"
+        style={{ width: fit?.w, height: fit?.h }}
+      >
+        <img
+          src={src}
+          alt={alt}
+          onLoad={(e) => {
+            const el = e.currentTarget;
+            if (el.naturalWidth && el.naturalHeight) {
+              setRatio(clampRatio(el.naturalWidth / el.naturalHeight));
+            }
+          }}
+          className="absolute inset-0 h-full w-full object-contain"
+          style={{ printColorAdjust: "exact", WebkitPrintColorAdjust: "exact" }}
+        />
+        {variant === "product" && <CornerTicks />}
+      </div>
     </div>
   );
 }

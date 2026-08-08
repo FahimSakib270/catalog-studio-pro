@@ -73,13 +73,7 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
             }}
           >
             {p.images.qr ? (
-              <SmartImage
-                src={p.images.qr}
-                alt="QR"
-                variant="qr"
-                fill
-                className="h-full w-full"
-              />
+              <SmartImage src={p.images.qr} alt="QR" variant="qr" />
             ) : (
               <span
                 className="f-mono text-[8px] uppercase tracking-[0.12em]"
