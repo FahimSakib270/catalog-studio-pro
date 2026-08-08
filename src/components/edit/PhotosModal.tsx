@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useActiveProduct, useCatalog } from "../../store/catalog";
 import { useToast } from "../studio/Toasts";
-import type { Product } from "../../types/catalog";
+import type { ImageAsset, Product } from "../../types/catalog";
 
 /* ------------------------------------------------------------------ */
 /*  Photos modal — 4 dropzones, PNG data-URL, persist, reset           */
@@ -33,9 +33,9 @@ export function PhotosModal({
   if (!open || !product) return null;
   const current = product;
 
-  function setImage(slot: SlotKey, dataUrl: string) {
+  function setImage(slot: SlotKey, asset: ImageAsset) {
     const next = JSON.parse(JSON.stringify(current)) as Product;
-    next.images[slot] = dataUrl;
+    next.images[slot] = asset;
     updateProduct(current.modelCode, next);
     toast.success("Photo updated", SLOTS.find((s) => s.key === slot)?.label);
   }
@@ -47,9 +47,19 @@ export function PhotosModal({
     }
     const reader = new FileReader();
     reader.onload = () => {
-      const result = reader.result as string;
-      // Normalize to PNG data-URL when possible; otherwise keep as-is.
-      setImage(slot, result);
+      const dataUrl = reader.result as string;
+      // Capture the natural aspect ratio at upload time so preview AND print
+      // render the ratio-hugging frame identically (no onLoad dependency).
+      const img = new Image();
+      img.onload = () => {
+        const ratio =
+          img.naturalWidth && img.naturalHeight
+            ? img.naturalWidth / img.naturalHeight
+            : 1;
+        setImage(slot, { dataUrl, ratio });
+      };
+      img.onerror = () => setImage(slot, { dataUrl, ratio: 1 });
+      img.src = dataUrl;
     };
     reader.onerror = () =>
       toast.error("Read failed", "Could not read the file.");
@@ -70,7 +80,7 @@ export function PhotosModal({
 
   function resetSlot(slot: SlotKey) {
     const next = JSON.parse(JSON.stringify(current)) as Product;
-    next.images[slot] = "";
+    next.images[slot] = { dataUrl: "", ratio: 1 };
     updateProduct(current.modelCode, next);
     toast.success("Photo cleared", SLOTS.find((s) => s.key === slot)?.label);
   }
@@ -140,7 +150,7 @@ export function PhotosModal({
 
           <div className="grid grid-cols-2 gap-3">
             {SLOTS.map((slot) => {
-              const value = product.images[slot.key];
+              const value = product.images[slot.key].dataUrl;
               return (
                 <div
                   key={slot.key}

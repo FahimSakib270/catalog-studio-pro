@@ -96,10 +96,10 @@ export const seedProduct: Product = {
     },
   },
   images: {
-    logo: "",
-    product: "",
-    inUse: "",
-    qr: "",
+    logo: { dataUrl: "", ratio: 1 },
+    product: { dataUrl: "", ratio: 1 },
+    inUse: { dataUrl: "", ratio: 1 },
+    qr: { dataUrl: "", ratio: 1 },
   },
   templateId: "onyx-editorial",
 };

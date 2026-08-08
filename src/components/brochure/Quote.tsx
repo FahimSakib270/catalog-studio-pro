@@ -19,6 +19,7 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
   const includedNote = pick(ctx, p.includedNoteEn, p.includedNoteZh);
   const warrantyTitle = pick(ctx, "Warranty & Support", "质保与服务");
   const includedTitle = pick(ctx, "In the Box", "包装内容");
+  const inUseImg = p.images.inUse;
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -63,10 +64,11 @@ export function Quote({ ctx }: { ctx: BrochureCtx }) {
 
           {/* in-use photo fills the remaining column height */}
           <div className="mt-4 flex flex-1 flex-col">
-            {p.images.inUse ? (
+            {inUseImg.dataUrl ? (
               <SmartImage
-                src={p.images.inUse}
+                src={inUseImg.dataUrl}
                 alt="in use"
+                ratio={inUseImg.ratio}
                 variant="inUse"
                 stageHeight="100%"
                 className="flex-1"

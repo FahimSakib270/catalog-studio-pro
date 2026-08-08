@@ -70,10 +70,12 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
             style={{
               borderColor: "var(--t-hairline)",
               backgroundColor: "#ffffff",
+              printColorAdjust: "exact",
+              WebkitPrintColorAdjust: "exact",
             }}
           >
-            {p.images.qr ? (
-              <SmartImage src={p.images.qr} alt="QR" variant="qr" />
+            {p.images.qr.dataUrl ? (
+              <SmartImage src={p.images.qr.dataUrl} alt="QR" variant="qr" />
             ) : (
               <span
                 className="f-mono text-[8px] uppercase tracking-[0.12em]"
@@ -100,7 +102,12 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
       {/* ribbon phone/email/wechat */}
       <div
         className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-3"
-        style={{ backgroundColor: "var(--t-accent)", breakInside: "avoid" }}
+        style={{
+          backgroundColor: "var(--t-accent)",
+          breakInside: "avoid",
+          printColorAdjust: "exact",
+          WebkitPrintColorAdjust: "exact",
+        }}
       >
         <span
           className="f-mono text-[9px] font-bold uppercase tracking-[0.12em]"
@@ -125,7 +132,12 @@ export function Contact({ ctx }: { ctx: BrochureCtx }) {
       {/* company band */}
       <div
         className="flex items-center justify-between px-6 py-2.5"
-        style={{ backgroundColor: "var(--t-accent2)", breakInside: "avoid" }}
+        style={{
+          backgroundColor: "var(--t-accent2)",
+          breakInside: "avoid",
+          printColorAdjust: "exact",
+          WebkitPrintColorAdjust: "exact",
+        }}
       >
         <span
           className="f-display text-[11px] font-semibold uppercase tracking-[0.16em]"

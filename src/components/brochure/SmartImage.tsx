@@ -9,6 +9,10 @@ import { useLayoutEffect, useRef, useState } from "react";
  * (clamped to 0.8–2.2) so the image is shown in full with ZERO cropping and
  * ZERO letterbox bars. Template corner ticks hug the inner frame.
  *
+ * The ratio is read FROM DATA (captured at upload time) — never from onLoad —
+ * so the preview and the hidden print tree render identically with zero
+ * waiting. If no ratio is supplied (fallback), it measures onLoad instead.
+ *
  * QR is the exception: it renders on a plain white square card with
  * object-contain and NO stage, so the code stays crisp and scannable.
  */
@@ -18,6 +22,8 @@ export type SmartImageVariant = "product" | "inUse" | "logo" | "qr";
 interface SmartImageProps {
   src: string;
   alt: string;
+  /** Natural aspect ratio (w/h) captured at upload. Preferred over onLoad. */
+  ratio?: number;
   variant?: SmartImageVariant;
   /** Dark templates use a lighter tint + light dot grid. */
   dark?: boolean;
@@ -46,36 +52,40 @@ function CornerTicks() {
 export function SmartImage({
   src,
   alt,
+  ratio,
   variant = "product",
   dark = false,
   stageHeight = "100%",
   className = "",
 }: SmartImageProps) {
   const stageRef = useRef<HTMLDivElement>(null);
-  const [ratio, setRatio] = useState<number | null>(null);
+  const [measured, setMeasured] = useState<number | null>(null);
   const [fit, setFit] = useState<{ w: number; h: number } | null>(null);
+
+  // Prefer the stored ratio; fall back to onLoad measurement.
+  const effectiveRatio = ratio && ratio > 0 ? clampRatio(ratio) : measured;
 
   // Measure the stage and size the inner frame to hug the photo's ratio.
   useLayoutEffect(() => {
     const stage = stageRef.current;
-    if (!stage || !ratio) return;
+    if (!stage || !effectiveRatio) return;
     const measure = () => {
       const sw = stage.clientWidth;
       const sh = stage.clientHeight;
       if (!sw || !sh) return;
-      if (ratio >= sw / sh) {
+      if (effectiveRatio >= sw / sh) {
         const w = sw;
-        setFit({ w, h: w / ratio });
+        setFit({ w, h: w / effectiveRatio });
       } else {
         const h = sh;
-        setFit({ w: h * ratio, h });
+        setFit({ w: h * effectiveRatio, h });
       }
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(stage);
     return () => ro.disconnect();
-  }, [ratio]);
+  }, [effectiveRatio]);
 
   // QR: plain white square card, object-contain, no stage / no blur.
   if (variant === "qr") {
@@ -109,7 +119,7 @@ export function SmartImage({
   return (
     <div
       ref={stageRef}
-      className={`relative w-full overflow-hidden ${className}`}
+      className={`smart-stage relative w-full overflow-hidden ${className}`}
       style={{
         height: stageHeight,
         backgroundColor: stageBg,
@@ -120,7 +130,7 @@ export function SmartImage({
     >
       {/* inner frame — hugs the photo's own shape */}
       <div
-        className="relative mx-auto"
+        className="inner-frame relative mx-auto"
         style={{ width: fit?.w, height: fit?.h }}
       >
         <img
@@ -129,7 +139,7 @@ export function SmartImage({
           onLoad={(e) => {
             const el = e.currentTarget;
             if (el.naturalWidth && el.naturalHeight) {
-              setRatio(clampRatio(el.naturalWidth / el.naturalHeight));
+              setMeasured(clampRatio(el.naturalWidth / el.naturalHeight));
             }
           }}
           className="absolute inset-0 h-full w-full object-contain"

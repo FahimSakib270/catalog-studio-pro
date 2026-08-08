@@ -31,6 +31,7 @@ export function Cover({ ctx }: { ctx: BrochureCtx }) {
   );
   const trust = p.trust;
   const ribbon = p.ribbon;
+  const productImg = p.images.product;
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -81,10 +82,11 @@ export function Cover({ ctx }: { ctx: BrochureCtx }) {
 
       {/* photo stage — 95mm, ratio-hugging frame */}
       <div className="mt-5">
-        {p.images.product ? (
+        {productImg.dataUrl ? (
           <SmartImage
-            src={p.images.product}
+            src={productImg.dataUrl}
             alt={p.modelCode}
+            ratio={productImg.ratio}
             variant="product"
             dark={dark}
             stageHeight="95mm"
@@ -141,7 +143,11 @@ export function Cover({ ctx }: { ctx: BrochureCtx }) {
           <div
             key={i}
             className="flex items-center justify-center px-2 py-2.5 text-center"
-            style={{ backgroundColor: "var(--t-paper)" }}
+            style={{
+              backgroundColor: "var(--t-paper)",
+              printColorAdjust: "exact",
+              WebkitPrintColorAdjust: "exact",
+            }}
           >
             <span className="f-mono text-[8px] uppercase tracking-[0.12em]">
               {r}
@@ -153,7 +159,12 @@ export function Cover({ ctx }: { ctx: BrochureCtx }) {
       {/* company band */}
       <div
         className="flex items-center justify-between px-2 py-2.5"
-        style={{ backgroundColor: "var(--t-accent2)", breakInside: "avoid" }}
+        style={{
+          backgroundColor: "var(--t-accent2)",
+          breakInside: "avoid",
+          printColorAdjust: "exact",
+          WebkitPrintColorAdjust: "exact",
+        }}
       >
         <span
           className="f-display text-[11px] font-semibold uppercase tracking-[0.16em]"

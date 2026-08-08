@@ -35,11 +35,23 @@ export const variantsSchema = z.object({
 
 export type Variants = z.infer<typeof variantsSchema>;
 
+/**
+ * Image asset — a data-URL plus the photo's natural aspect ratio.
+ * The ratio is captured at upload time so preview AND print render the
+ * ratio-hugging frame identically with zero waiting (no onLoad dependency).
+ */
+export const imageAssetSchema = z.object({
+  dataUrl: z.string(),
+  ratio: z.number(),
+});
+
+export type ImageAsset = z.infer<typeof imageAssetSchema>;
+
 export const imagesSchema = z.object({
-  logo: z.string(),
-  product: z.string(),
-  inUse: z.string(),
-  qr: z.string(),
+  logo: imageAssetSchema,
+  product: imageAssetSchema,
+  inUse: imageAssetSchema,
+  qr: imageAssetSchema,
 });
 
 export type Images = z.infer<typeof imagesSchema>;
